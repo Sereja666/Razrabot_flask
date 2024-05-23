@@ -34,11 +34,10 @@ class TaskCreateSchema(BaseModel):
     description: str = None
 
 
-# Create a task
+# 1. Создание задачи
 @app.route('/tasks', methods=['POST'])
 def create_task():
     try:
-
         task_data = TaskCreateSchema(title=request.form.get('title'), description=request.form.get('description'))
 
         new_task = Task(**task_data.dict())
@@ -59,11 +58,10 @@ def create_task():
                         )
 
 
-# Get all tasks
+# 2. Получение списка задач
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
     all_tasks = Task.query.all()
-
     task_list = []
     for task in all_tasks:
         task_data = TaskSchema(id=task.id, title=task.title, description=task.description, created_at=task.created_at,
@@ -72,7 +70,7 @@ def get_tasks():
     return jsonify(task_list)
 
 
-# Get a single task
+# 3. Получение информации о задаче
 @app.route('/tasks/<int:id>', methods=['GET'])
 def get_task(id):
     try:
@@ -86,11 +84,10 @@ def get_task(id):
                         )
 
 
-# Update a task
+# 4. Обновление задачи
 @app.route('/tasks/<int:id>', methods=['PUT'])
 def update_task(id):
     task = Task.query.get(id)
-
 
     task_data = TaskSchema(title=request.json.get('title', task.title),
                            description=request.json.get('description', task.description))
@@ -98,7 +95,7 @@ def update_task(id):
     task.title = task_data.title
     task.description = task_data.description
     db.session.commit()
-    # return task_data.json()
+
     return {'id': task.id,
             "title": task.title,
             "description": task.description,
@@ -114,7 +111,7 @@ def delete_task(id):
     task = Task.query.get(id)
     db.session.delete(task)
     db.session.commit()
-    return jsonify({'message': 'Task deleted'})
+    return jsonify({'message': f'Задача {id} успешно удалена'})
 
 
 if __name__ == '__main__':
